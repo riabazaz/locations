@@ -153,9 +153,9 @@
     </div>
     <div id="list">
       <ol id="locations">
-      <li>hi<span class="close">x</span></li><hr>
+      <!-- <li>hi<span class="close">x</span></li><hr>
       <li>wassup<span class="close">x</span></li><hr>
-      <li>number3<span class="close">x</span></li><hr>
+      <li>number3<span class="close">x</span></li><hr> -->
       </ol>
     </div>
     <div id="map"></div>
@@ -249,13 +249,35 @@
         var ol = document.getElementById("locations")
         var input = document.getElementById("pac-input")
         var li = document.createElement("li")
+        var autocomplete = new google.maps.places.Autocomplete(input);
 
-        li.setAttribute('id', input.value);
-        li.appendChild(document.createTextNode(input.value));
-        li.append('<span class="close">x</span>'); //V look here!!
+        var name = input.value.split(/,(.+)/)[0];
+
+
+        var hr = document.createElement("hr")
+        var span = document.createElement("span")
+        span.className = "close"
+        span.innerHTML = "x"
+
+        li.setAttribute('id', name);
+        li.appendChild(document.createTextNode(name));
+        // new stuff here
+        li.appendChild(span);
+        ////////////////////////
+
         ol.appendChild(li);
+        // new stuff here
+        ol.appendChild(hr)
+        ////////////////////////
+        span.onclick = function(){
+          var item = document.getElementById(name);
+          ol.removeChild(item);
+          ol.removeChild(hr);
+        }
 
       }
+
+      
   
 
     </script>
