@@ -9,6 +9,8 @@
        * element that contains the map. */
       #map {
         height: 100%;
+        width: 100%;
+        position: absolute;
       }
 
 
@@ -45,23 +47,14 @@
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         background-color: #fff;
         font-family: Roboto;
+        width: 350px;
       }
 
       #pac-container {
         padding-bottom: 12px;
         margin-right: 12px;
+        width:350px;
       }
-
-      /*.pac-controls {
-        display: inline-block;
-        padding: 5px 11px;
-      }
-
-      .pac-controls label {
-        font-family: Roboto;
-        font-size: 13px;
-        font-weight: 300;
-      }*/
 
       #pac-input {
         background-color: #fff;
@@ -72,7 +65,8 @@
         margin-top: 10px;
         padding: 0 13px 0 13px;
         text-overflow: ellipsis;
-        width: 400px;
+        width: 265px;
+
       }
 
       #pac-input:focus {
@@ -90,45 +84,82 @@
       }
 
       #list {
-        margin-top: 100px;
-        width: 300px ;
-        color: blue;
+        padding: 10px;
+        margin: 10px 10px 0 0;
+        border-radius: 10px 10px 10px 10px;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        background-color: #fff;
+        font-family: Roboto;
+        width: 350px;
+        float:right;
+        position: relative;
+        z-index: 5;
+        margin-top: 115px;
+        height:365px;
+        display:inline-block;
+        overflow: scroll;
+
       }
+      ol{
+        margin-left:-5px;
+      }
+      
+      
+      ol li {
+        position: relative;
+        font-size: 14px;
+        padding:2px;
+        transition: 0.2s;
+      }
+      hr {
+        border: 0;
+        height: 0;
+        width: 300px;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        margin-left:-20px;
+      }
+      #addButton {
+        padding: 10px;
+        width: 12%;
+        background: #d9d9d9;
+        color: #555;
+        float: left;
+        text-align: center;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        border-radius: 0px 20px 20px 0px;
+        box-sizing: border-box;
+      }
+
+      #addButton:hover {
+        background-color: #bbb;
+      }
+
+     
 
     </style>
   </head>
   <body>
     <div class="pac-card" id="pac-card">
-      
         <div id="title">Study Locations</div>
-        <!-- <div id="type-selector" class="pac-controls">
-          <input type="radio" name="type" id="changetype-all" checked="checked">
-          <label for="changetype-all">All</label>
-
-          <input type="radio" name="type" id="changetype-establishment">
-          <label for="changetype-establishment">Establishments</label>
-
-          <input type="radio" name="type" id="changetype-address">
-          <label for="changetype-address">Addresses</label>
-
-          <input type="radio" name="type" id="changetype-geocode">
-          <label for="changetype-geocode">Geocodes</label>
-        </div> -->
-<!--         <div id="strict-bounds-selector" class="pac-controls">
-          <input type="checkbox" id="use-strict-bounds" value="">
-          <label for="use-strict-bounds">Strict Bounds</label>
-        </div> -->
       <div id="pac-container">
         <input id="pac-input" type="text"
             placeholder="Enter a location">
+        <span id="addButton">+</span> 
       </div>
     </div>
     <div id="list">
-          <div id="list"></div>
-          <h2>Hello, I'm here</h2>
+      <ol id="locations">
+      <li>hi</li><hr>
+      <li>wassup</li>
+      <hr><li>number3</li>
+      </ol>
     </div>
-    <div id="map">
-    </div>
+    <div id="map"></div>
     <div id="infowindow-content">
       <img src="" width="16" height="16" id="place-icon">
       <span id="place-name"  class="title"></span><br>
