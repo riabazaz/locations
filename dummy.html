@@ -12,8 +12,6 @@
         width: 100%;
         position: absolute;
       }
-
-
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
@@ -25,19 +23,15 @@
         font-size: 15px;
         font-weight: 300;
       }
-
       #infowindow-content .title {
         font-weight: bold;
       }
-
       #infowindow-content {
         display: none;
       }
-
       #map #infowindow-content {
         display: inline;
       }
-
       .pac-card {
         margin: 10px 10px 0 0;
         border-radius: 10px 10px 10px 10px;
@@ -49,30 +43,27 @@
         font-family: Roboto;
         width: 350px;
       }
-
       #pac-container {
         padding-bottom: 12px;
         margin-right: 12px;
         width:350px;
       }
-
       #pac-input {
         background-color: #fff;
         font-family: Roboto;
         font-size: 15px;
         font-weight: 300;
-        margin-left: 12px;
+        margin-left: 20px;
         margin-top: 10px;
         padding: 0 13px 0 13px;
         text-overflow: ellipsis;
         width: 265px;
-
+        float: left;
+        margin-bottom: 10px;
       }
-
       #pac-input:focus {
         border-color: #4d90fe;
       }
-
       #title {
         color: #fff;
         background-color: chocolate;
@@ -82,7 +73,6 @@
         font-family: Roboto;
         border-radius: 10px 10px 0px 0px;
       }
-
       #list {
         padding: 10px;
         margin: 10px 10px 0 0;
@@ -100,7 +90,6 @@
         height:365px;
         display:inline-block;
         overflow: scroll;
-
       }
       ol{
         margin-left:-5px;
@@ -122,28 +111,35 @@
         margin-left:-20px;
       }
       #addButton {
-        height: 29px;
-        padding: 10px;
-        width: 8%;
-        background: #d9d9d9;
-        color: #555;
-        float: right;
-        margin-top: 5px;
-        margin-right: 5px;
-        text-align: center;
-        font-size: 12px;
-        cursor: pointer;
-        transition: 0.3s;
-        border-radius: 20px;
-        box-sizing: border-box;
+            padding: 1px;
+            width: 20px;
+            background: #d9d9d9;
+            color: #555;
+            float: left;
+            text-align: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 0px 20px 20px 0px;
+            box-sizing: border-box;
+            margin-top: 10.49PX;
       }
-
       #addButton:hover {
         background-color: #bbb;
       }
+      .close {
+          position: absolute;
+          right: 0;
+          top: 0;
+          padding: 12px 16px 12px 16px;
+          margin-top: -10px;
+      }
 
+      .close:hover {
+        transition: 0.3s;
+        color: #f03e3e;
+      }
      
-
     </style>
   </head>
   <body>
@@ -157,9 +153,9 @@
     </div>
     <div id="list">
       <ol id="locations">
-      <li>hi</li><hr>
-      <li>wassup</li>
-      <hr><li>number3</li>
+      <li>hi<span class="close">x</span></li><hr>
+      <li>wassup<span class="close">x</span></li><hr>
+      <li>number3<span class="close">x</span></li><hr>
       </ol>
     </div>
     <div id="map"></div>
@@ -168,37 +164,29 @@
       <span id="place-name"  class="title"></span><br>
       <span id="place-address"></span>
     </div>
-
     <script>
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42.2808, lng: -83.7430},
           zoom: 17,
           fullscreenControl: false
-
         });
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
         var types = document.getElementById('type-selector');
         var strictBounds = document.getElementById('strict-bounds-selector');
-
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
-
         var autocomplete = new google.maps.places.Autocomplete(input);
-
         // Bind the map's bounds (viewport) property to the autocomplete object,
         // so that the autocomplete requests use the current map bounds for the
         // bounds option in the request.
         autocomplete.bindTo('bounds', map);
-
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
-
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
@@ -206,7 +194,6 @@
           map: map,
           anchorPoint: new google.maps.Point(0, -29)
         });
-
         autocomplete.addListener('place_changed', function() {
           infowindow.close();
           marker.setVisible(false);
@@ -217,7 +204,6 @@
             window.alert("No details available for input: '" + place.name + "'");
             return;
           }
-
           // If the place has a geometry, then present it on a map.
           if (place.geometry.viewport) {
             map.fitBounds(place.geometry.viewport);
@@ -227,7 +213,6 @@
           }
           marker.setPosition(place.geometry.location);
           marker.setVisible(true);
-
           var address = '';
           if (place.address_components) {
             address = [
@@ -236,13 +221,11 @@
               (place.address_components[2] && place.address_components[2].short_name || '')
             ].join(' ');
           }
-
           infowindowContent.children['place-icon'].src = place.icon;
           infowindowContent.children['place-name'].textContent = place.name;
           infowindowContent.children['place-address'].textContent = address;
           infowindow.open(map, marker);
         });
-
         // Sets a listener on a radio button to change the filter type on Places
         // Autocomplete.
         function setupClickListener(id, types) {
@@ -251,12 +234,10 @@
             autocomplete.setTypes(types);
           });
         }
-
         setupClickListener('changetype-all', []);
         setupClickListener('changetype-address', ['address']);
         setupClickListener('changetype-establishment', ['establishment']);
         setupClickListener('changetype-geocode', ['geocode']); 
-
         document.getElementById('use-strict-bounds')
             .addEventListener('click', function() {
               console.log('Checkbox clicked! New state=' + this.checked);
