@@ -148,7 +148,7 @@
       <div id="pac-container">
         <input id="pac-input" type="text"
             placeholder="Enter a location">
-        <span id="addButton">+</span> 
+        <span onclick="addItem()"id="addButton">+</span> 
       </div>
     </div>
     <div id="list">
@@ -244,6 +244,20 @@
               autocomplete.setOptions({strictBounds: this.checked});
             });
       }
+      
+      function addItem(){
+        var ol = document.getElementById("locations")
+        var input = document.getElementById("pac-input")
+        var li = document.createElement("li")
+
+        li.setAttribute('id', input.value);
+        li.appendChild(document.createTextNode(input.value));
+        li.append('<span class="close">x</span>'); 
+        ol.appendChild(li);
+
+      }
+  
+
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places&callback=initMap"
         async defer></script>
