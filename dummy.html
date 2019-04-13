@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <title>Place Autocomplete</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
@@ -60,6 +61,7 @@
         width: 265px;
         float: left;
         margin-bottom: 10px;
+        border-radius: 20px 0px 0px 20px;
       }
       #pac-input:focus {
         border-color: #4d90fe;
@@ -105,6 +107,14 @@
         width: 270px;
         list-style-type: none;
       }
+      
+      hr.side { 
+            border-top: 2px solid black;
+            width: 600px;
+            margin-top: -5px;
+
+      }
+
       hr {
         border: 0;
         height: 0;
@@ -114,16 +124,18 @@
         margin-left:-20px;
       }
 
+      
+
       h3 {
         margin-top: 5px;
         color: chocolate;
       }
 
       #addButton {
-            padding: 1px;
+            padding: 1.5px;
             width: 20px;
-            background: #d9d9d9;
-            color: #555;
+            background: sandybrown;
+            color: white;
             float: left;
             text-align: center;
             font-size: 16px;
@@ -133,7 +145,7 @@
             margin-top: 10.49PX;
       }
       #addButton:hover {
-        background-color: #bbb;
+        background-color: #FEDAA5;
         cursor: pointer;
 
 
@@ -163,7 +175,8 @@
       </div>
     </div>
     <div id="list">
-      <h3>Your Favorite Locations</h3>
+      <h3>Your Saved Locations</h3>
+      <hr class ="side"></hr>
       <ul id="locations">
       <!-- <li>hi<span class="close">x</span></li><hr>
       <li>wassup<span class="close">x</span></li><hr>
@@ -176,12 +189,15 @@
       <span id="place-name"  class="title"></span><br>
       <span id="place-address"></span>
     </div>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
       var optionSelected = false;
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
       function initMap() {
+      
         var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42.2808, lng: -83.7430},
           zoom: 17,
@@ -225,7 +241,6 @@
 
           if(place.name == name){
             optionSelected = true;
-            console.log(optionSelected);
           }
           if (!place.geometry) {
             // User entered the name of a Place that was not suggested and
@@ -280,6 +295,12 @@
 
     function addItem(){
           if(optionSelected == true){
+            if (document.getElementsByTagName('li').length == 0){
+              console.log("bye")
+              ul = document.getElementById("locations")
+              ul.innerHTML = ''
+            }
+
           var ul = document.getElementById("locations")
           var input = document.getElementById("pac-input")
           var li = document.createElement("li")
@@ -289,15 +310,20 @@
             var hr = document.createElement("hr")
             var span = document.createElement("span")
             span.className = "close"
-            span.innerHTML = '<i class="fa fa-trash-o" aria-hidden="true"></i>';
+            var times = document.createElement("i").setAttribute('class', "fas fa-times")
+            span.innerHTML = "x"
+
+            // span.innerHTML = '<aria-hidden="true"></i>';
 
             li.setAttribute('id', name);
             li.appendChild(document.createTextNode(name));
             // new stuff here
-            li.appendChild(span);
+            li.append(span);
             ////////////////////////
 
             ul.appendChild(li);
+
+            
             // new stuff here
             ul.appendChild(hr)
             ////////////////////////
@@ -308,29 +334,26 @@
             }
           }
           optionSelected = false;
-      }
-
           
-              
 
+      }
+      //console.log(document.getElementsByTagName('li').length)
 
-        
-      //console.log(optionSelected)
+      if(document.getElementsByTagName('li').length == 0){
+        console.log("hi")
+        var ul = document.getElementById("locations")
+        ul.innerHTML = "No study spots"
+
+      }
       
 
     </script>
+  
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places&callback=initMap"
         async defer></script>
-    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-   <!--  <script src="jquery.geocomplete.js"></script>
 
     <script type="text/javascript">
-      $("pac-input")
-      .geocomplete()
-      .bind("geocode:result", function(event, result){
-        console.log(result);
-      })(jquery);
-    </script> -->
+      
+    </script>
   </body>
 </html>
