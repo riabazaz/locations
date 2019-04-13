@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places"
+        async defer></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     <title>Place Autocomplete</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -111,7 +113,7 @@
       hr.side { 
             border-top: 2px solid black;
             width: 600px;
-            margin-top: -5px;
+            margin-top: -8px;
 
       }
 
@@ -196,10 +198,11 @@
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-      function initMap() {
       
+    function initMap() {
+
         var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 42.2808, lng: -83.7430},
+          center: {lat: 42.2767, lng: -83.7399},
           zoom: 17,
           fullscreenControl: false
         });
@@ -209,7 +212,7 @@
         var strictBounds = document.getElementById('strict-bounds-selector');
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
         var cityBounds = new google.maps.LatLngBounds(
-          new google.maps.LatLng(42.2808, -83.7430));
+          new google.maps.LatLng(42.2767, -83.7399));
         var options = {
           bounds : cityBounds,
           types : ['establishment'],
@@ -225,6 +228,8 @@
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
 
+
+
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
@@ -236,6 +241,7 @@
         autocomplete.addListener('place_changed', function() {
           infowindow.close();
           marker.setVisible(false);
+
           var place = autocomplete.getPlace();
           var name = input.value.split(/,(.+)/)[0];
 
@@ -291,12 +297,13 @@
             });
 
 
-    }
+  }
+
+
 
     function addItem(){
           if(optionSelected == true){
             if (document.getElementsByTagName('li').length == 0){
-              console.log("bye")
               ul = document.getElementById("locations")
               ul.innerHTML = ''
             }
@@ -327,11 +334,18 @@
             // new stuff here
             ul.appendChild(hr)
             ////////////////////////
+
             span.onclick = function(){
               var item = document.getElementById(name);
               ul.removeChild(item);
               ul.removeChild(hr);
+              if(document.getElementsByTagName('li').length == 0){
+                console.log("hi")
+                ul.innerHTML = "No study spots"
+              }
+
             }
+
           }
           optionSelected = false;
           
@@ -340,7 +354,6 @@
       //console.log(document.getElementsByTagName('li').length)
 
       if(document.getElementsByTagName('li').length == 0){
-        console.log("hi")
         var ul = document.getElementById("locations")
         ul.innerHTML = "No study spots"
 
@@ -348,12 +361,9 @@
       
 
     </script>
-  
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places&callback=initMap"
-        async defer></script>
-
+ 
     <script type="text/javascript">
-      
+      initMap();
     </script>
   </body>
 </html>
