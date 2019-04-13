@@ -114,9 +114,7 @@
             border-top: 2px solid black;
             width: 600px;
             margin-top: -8px;
-
       }
-
       hr {
         border: 0;
         height: 0;
@@ -125,14 +123,11 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         margin-left:-20px;
       }
-
       
-
       h3 {
         margin-top: 5px;
         color: chocolate;
       }
-
       #addButton {
             padding: 1.5px;
             width: 20px;
@@ -149,8 +144,6 @@
       #addButton:hover {
         background-color: #FEDAA5;
         cursor: pointer;
-
-
       }
       .close {
           position: absolute;
@@ -159,7 +152,6 @@
           padding: 12px 16px 12px 16px;
           margin-top: -10px;
       }
-
       .close:hover {
         transition: 0.3s;
         color: #f03e3e;
@@ -195,17 +187,18 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
       var optionSelected = false;
+      var place; 
+      var gmarkers = [];
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-      
-    function initMap() {
-
-        var map = new google.maps.Map(document.getElementById('map'), {
+      var map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: 42.2767, lng: -83.7399},
           zoom: 17,
           fullscreenControl: false
         });
+      
+    function initMap() {
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
         var types = document.getElementById('type-selector');
@@ -227,7 +220,6 @@
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
-
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
@@ -236,16 +228,16 @@
           anchorPoint: new google.maps.Point(0, -29)
         });
 
-
         autocomplete.addListener('place_changed', function() {
           infowindow.close();
           marker.setVisible(false);
           place = autocomplete.getPlace();
           var name = input.value.split(/,(.+)/)[0];
-          if(name == place.name){
+          var placeshortname = place.name.split(/,(.+)/)[0];
+
+          if(name == place.name || name == placeshortname || name == place.short_name){
             optionSelected = true;
           }
-
           if (!place.geometry) {
             // User entered the name of a Place that was not suggested and
             // pressed the Enter key, or the Place Details request failed.
@@ -274,10 +266,7 @@
           infowindowContent.children['place-address'].textContent = address;
           infowindow.open(map, marker);
           });
-
-
  
-
         // Sets a listener on a radio button to change the filter type on Places
         // Autocomplete.
         function setupClickListener(id, types) {
@@ -285,7 +274,6 @@
           radioButton.addEventListener('click', function() {
             autocomplete.setTypes(types);
             });
-
           }
           setupClickListener('changetype-all', []);
           setupClickListener('changetype-address', ['address']);
@@ -295,63 +283,81 @@
               .addEventListener('click', function() {
                 console.log('Checkbox clicked! New state=' + this.checked);
                 autocomplete.setOptions({strictBounds: this.checked});
-
             });
-            }
+      }
+
+
       function addItem(){
           if(optionSelected == true){
             if (document.getElementsByTagName('li').length == 0){
               ul = document.getElementById("locations")
               ul.innerHTML = ''
             }
+            var ul = document.getElementById("locations")
+            var input = document.getElementById("pac-input")
+            var li = document.createElement("li")
 
-          var ul = document.getElementById("locations")
-          var input = document.getElementById("pac-input")
-          var li = document.createElement("li")
+            console.log(input.value);
+
           
-          var name = input.value.split(/,(.+)/)[0];
-
+            var name = input.value.split(/,(.+)/)[0];
             var hr = document.createElement("hr")
             var span = document.createElement("span")
             span.className = "close"
             var times = document.createElement("i").setAttribute('class', "fas fa-times")
             span.innerHTML = "x"
-
             // span.innerHTML = '<aria-hidden="true"></i>';
-
             li.setAttribute('id', name);
             li.appendChild(document.createTextNode(name));
             // new stuff here
             li.append(span);
             ////////////////////////
-
             ul.appendChild(li);
-
             
             // new stuff here
             ul.appendChild(hr)
             ////////////////////////
+            var marker = new google.maps.Marker({
+              map: map,
+              anchorPoint: new google.maps.Point(0, -29)
+            });
+            // marker.set("id", )
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+            gmarkers.push(marker);
+            marker.set("id", name)
+            // marker.set("name", gmarkers.length)
+            console.log(marker.id)
 
-            span.onclick = function(){
+
+             span.onclick = function(){
               var item = document.getElementById(name);
               ul.removeChild(item);
               ul.removeChild(hr);
+              console.log(item.id)
+              for (var i = 0; i < gmarkers.length; i++) {
+                console.log(gmarkers[i].id)
+                if(gmarkers[i].id == item.id){
+                  console.log("hi")
+                  console.log(gmarkers[i])
+                  gmarkers[i].setMap(null)
+                  gmarkers[i]=null
+                }
+              }
               if(document.getElementsByTagName('li').length == 0){
                 ul.innerHTML = "No study spots"
               }
-
             }
           }
           optionSelected = false;  
       }
 
+
       if(document.getElementsByTagName('li').length == 0){
         var ul = document.getElementById("locations")
         ul.innerHTML = "No study spots"
-
       }
       initMap();
-
     </script>
     <script type="text/javascript">
     </script>
