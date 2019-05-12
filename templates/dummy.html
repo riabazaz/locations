@@ -186,6 +186,7 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
+    var google
       var optionSelected = false;
       var place; 
       var gmarkers = [];
@@ -220,25 +221,30 @@
         autocomplete.bindTo('bounds', map);
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
-            ['address_components', 'geometry', 'icon', 'name']);
+            ['address_components', 'geometry', 'icon', 'name', 'formatted_address','place_id']);
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
         var marker = new google.maps.Marker({
           map: map,
           anchorPoint: new google.maps.Point(0, -29)
+
         });
 
         autocomplete.addListener('place_changed', function() {
           infowindow.close();
           marker.setVisible(false);
           place = autocomplete.getPlace();
+          console.log(place.place_id)
           var name = input.value.split(/,(.+)/)[0];
           var placeshortname = place.name.split(/,(.+)/)[0];
    //        console.log(place.address_components)
 			// for (var i = 0; i < listlocs.length; i++) {
    //        		console.log(listlocs[i].address_components)
    //        	}
+   		console.log(place.formatted_address)
+   		console.log(place.address_components)
+
 
 
           if(place){
