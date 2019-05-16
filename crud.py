@@ -2,17 +2,25 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from marshmallow import Schema, fields
+from flask_cors import CORS, cross_origin
 import os
+
 
 app = Flask(__name__, template_folder="/Users/Ria/Desktop/Shift/khalid/templates")
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'crud.sqlite')
+app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['SECRET_KEY'] = 'the quick brown fox jumps over the lazy   dog'
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 
+CORS(app)
+
+
+
 users_locations = db.Table('users_locations',
                             db.Column('user_id', db.Integer, db.ForeignKey('user.username')),
-                            db.Column('formatted_address', db.String, db.ForeignKey('location.formatted_address')))
+                            db.Column('location_id', db.String, db.ForeignKey('location.id')))
 
 class User(db.Model):
     username = db.Column(db.String(80),primary_key=True, unique=True)
@@ -24,6 +32,7 @@ class User(db.Model):
         self.username = username
         self.email = email
         self.password = password
+        self.studylocations = []
 
 
 
@@ -98,50 +107,33 @@ def user_delete(id):
 class Location(db.Model):
     id = db.Column(db.String(300), primary_key=True)
     formatted_address = db.Column(db.String(200), unique=True)
-    street_number = db.Column(db.String(10))
-    route = db.Column(db.String(200), unique=False)
-    neighborhood = db.Column(db.String(100), unique=False)
-    locality = db.Column(db.String(100), unique=False)
-    admin_area = db.Column(db.String(100), unique=False)
-    country = db.Column(db.String(80), unique=False)
-    postal_code = db.Column(db.String(100), unique=False)
+    name = db.Column(db.String(50), unique=False)
 
-    def __init__(self, place_id, formatted_address, street_number, route, neighborhood, locality, 
-            admin_area, country, postal_code):
+    def __init__(self, place_id, formatted_address, name):
         self.id = place_id
         self.formatted_address = formatted_address
-        self.street_number = street_number
-        self.route = route
-        self.neighborhood = neighborhood
-        self.locality = locality
-        self.admin_area = admin_area
-        self.country = country
-        self.postal_code = postal_code
+        self.name = name
 
 
 
 @app.route("/user/<id>/location", methods=["POST"])
+@cross_origin()
 def add_user_location(id):
     #if location not already in locations table
+    print(request)
     user = User.query.get(id)
     location_id = request.json['id']
     formatted_address = request.json['formatted_address']
-    street_number = request.json['street_number']
-    route = request.json['route']
-    neighborhood = request.json['neighborhood']
-    locality = request.json['locality']
-    admin_area = request.json['admin_area']
-    country = request.json['country']
-    postal_code = request.json['postal_code']
+    name = request.json['name']
     inUserLocs = False
 
-    if Location.query.filter_by(id = location_id) == None:
+    if Location.query.get(location_id) == None:
         #if not in location table, this means not in user.studylocations as well
-        new_location = Location(location_id, formatted_address, street_number, route,
-        neighborhood, locality, admin_area, country, postal_code)
+        new_location = Location(location_id, formatted_address, name)
         user.studylocations.append(new_location) 
 
-    else: 
+    else:
+        print(Location.query.get(location_id))
         new_location = Location.query.get(location_id)
         #if in Location tables, must check that it isn't in user.studylocations
         for item in user.studylocations:
@@ -150,6 +142,7 @@ def add_user_location(id):
         if inUserLocs == False:
             #adds it to user.studylocations if not already there
             user.studylocations.append(new_location)
+    
 
     db.session.commit()
 
@@ -194,8 +187,9 @@ def get_user_locations(id):
 def user_location_delete(userid, locationid):
     user = User.query.get(userid)
     location = Location.query.get(locationid)
-    user.studylocations.remove(location)
-    db.session.commit()
+    if Location.query.get(locationid) != None:
+        user.studylocations.remove(location)
+        db.session.commit()
 
     return location_schema.jsonify(location)
 
@@ -203,8 +197,7 @@ def user_location_delete(userid, locationid):
 class LocationSchema(ma.Schema):
     class Meta:
         # Fields to expose
-        fields = ('id','formatted_address', 'street_number', 'route', 'neighborhood', 'locality', 
-            'admin_area', 'country', 'postal_code')
+        fields = ('id','formatted_address', 'name')
 
 location_schema = LocationSchema()
 locations_schema = LocationSchema(many=True)
