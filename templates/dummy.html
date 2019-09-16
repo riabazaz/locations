@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -186,29 +188,6 @@
     </div>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script type="text/javascript">
-    	$(document).ready(function() {
-    		const Url = "http://127.0.0.1:5000/"
-    		//function to add location to the database
- 			$("#addButton").click(function() {
- 				$.ajax({
-				  type: "POST",
-				  url: Url + "user/ria/location", 
-				  contentType: 'application/json;charset=UTF-8',
-				  data: JSON.stringify(data1),
-				  crossDomain: true
-
- 				})
-
-   		 	})
-    		$.get(Url + "user/ria/location", function(data, status){
-    			existinglocs = data	
-    			initExistingLocs(existinglocs)
-    					
-			});
-
-		})
-    </script>
     <script>
     var google
       var optionSelected = false;
@@ -218,9 +197,9 @@
       var data1;
       var placeid;
       var existinglocsnames = [];
-      var existinglocs = [];
+      var existinglocsinfo = [];
+      var exists = false;
       const Url = "http://127.0.0.1:5000/"
-
       // This example requires the Places library. Include the libraries=places
       // parameter when you first load the API. For example:
       // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
@@ -229,22 +208,17 @@
           zoom: 17,
           fullscreenControl: false
         });
-
-      function initExistingLocs(locations) {
-  			for (var i = 0; i < locations.length; i++){
-				$(existinglocsnames).append(locations[i].name)
-				// console.log(existinglocsnames)
-				// console.log(locations[i].name)
-				// addExistingItems(existinglocs[i].name)
-
-			}
-
-      }
-      addExistingItems(existinglocs[0])
-
-
+    	$(document).ready(function() {
+    		$.get(Url + "user/ria/location", function(data, status){
+				existinglocsinfo = data;
+				console.log(data)
+				for (var i = 0; i < data.length; i++){
+					existinglocsnames.append(data[i].name)
+				}
+			});
+    	})
+      
     function initMap() {
-
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
         var types = document.getElementById('type-selector');
@@ -272,22 +246,13 @@
         var marker = new google.maps.Marker({
           map: map,
           anchorPoint: new google.maps.Point(0, -29)
-
         });
-        
-
-
-        
-        
-
-
         autocomplete.addListener('place_changed', function() {
 	    infowindow.close();
 	    marker.setVisible(false);
 	    place = autocomplete.getPlace();
 	    var name = input.value.split(/,(.+)/)[0];
 	    var placeshortname = place.name.split(/,(.+)/)[0];
-
           if(place){
           	var alreadyContained = false;
           	for (var i = 0; i < listlocs.length; i++) {
@@ -304,7 +269,6 @@
 				}
 				placeid = place.place_id;
 				
-
           	}
           	
           }
@@ -354,64 +318,9 @@
           //       console.log('Checkbox clicked! New state=' + this.checked);
           //       autocomplete.setOptions({strictBounds: this.checked});
           //   });
-   
-      function addExistingItems(name){
-      		var ul = document.getElementById("locations")
-            var hr = document.createElement("hr")
-            var span = document.createElement("span")
-            span.className = "close"
-            span.setAttribute('id', "xbox")
-            // var times = document.createElement("i").setAttribute('class', "fas fa-times")
-            span.innerHTML = "x"
-            // console.log(document.getElementsByTagName(span))
-            // span.innerHTML = '<aria-hidden="true"></i>';
-            li.setAttribute('id', name);
-            li.appendChild(document.createTextNode(name));
-            // new stuff here
-            li.append(span);
-            ////////////////////////
-            ul.appendChild(li);
-            
-            // new stuff here
-            ul.appendChild(hr)
-            ////////////////////////
-            var marker = new google.maps.Marker({
-              map: map,
-              anchorPoint: new google.maps.Point(0, -29)
-             
-            });
-             marker.setPosition(place.geometry.location);
-              marker.setVisible(true);
-           	  marker.set("id", name)
-           	  gmarkers.push(marker);
-           	 listlocs.push(place.name)
-
-            // marker.set("id", )
-           
-            // marker.set("name", gmarkers.length)
-
-             span.onclick = function(){
-              var item = document.getElementById(name);
-              ul.removeChild(item);
-              ul.removeChild(hr);
-              console.log(placeid)
-
-
-              $(document).ready(function() {
-	              $.ajax({
-					  type: "DELETE",
-					  url: Url + "user/ria/location/" + placeid, 
-					  contentType: 'application/json;charset=UTF-8',
-					  crossDomain: true
-
-	 				})
-	          })
-          }
-
       }
-
-
-      	function addItem(){
+      
+      	function addItem(name){
           if(optionSelected == true){
             if (document.getElementsByTagName('li').length == 0){
               ul = document.getElementById("locations")
@@ -420,13 +329,13 @@
             var ul = document.getElementById("locations")
             var input = document.getElementById("pac-input")
             var li = document.createElement("li")
-
           
             var name = input.value.split(/,(.+)/)[0];
             var hr = document.createElement("hr")
             var span = document.createElement("span")
             span.className = "close"
             span.setAttribute('id', "xbox")
+            document.getElementById("xbox")
             // var times = document.createElement("i").setAttribute('class', "fas fa-times")
             span.innerHTML = "x"
             // console.log(document.getElementsByTagName(span))
@@ -447,39 +356,32 @@
              
             });
              marker.setPosition(place.geometry.location);
-              marker.setVisible(true);
+             marker.setVisible(true);
            	  marker.set("id", name)
            	  gmarkers.push(marker);
            	 listlocs.push(place.name)
-
             // marker.set("id", )
            
             // marker.set("name", gmarkers.length)
-
              span.onclick = function(){
               var item = document.getElementById(name);
               ul.removeChild(item);
               ul.removeChild(hr);
               console.log(placeid)
-
-
               $(document).ready(function() {
 	              $.ajax({
 					  type: "DELETE",
 					  url: Url + "user/ria/location/" + placeid, 
 					  contentType: 'application/json;charset=UTF-8',
 					  crossDomain: true
-
 	 				})
 	          })
-
               for (var i = 0; i < gmarkers.length; i++) {
                 if(gmarkers[i].id == item.id){
                   gmarkers[i].setMap(null)
                   gmarkers[i]=null
                   gmarkers.splice(i, 1)
                   listlocs.splice(i, 1)
-
                 }
               }
               if(document.getElementsByTagName('li').length == 0){
@@ -489,16 +391,34 @@
           }
           optionSelected = false;  
       }
-  }
-
       if(document.getElementsByTagName('li').length == 0){
         var ul = document.getElementById("locations")
         ul.innerHTML = "No study spots"
       }
-
-
       initMap();
    </script>
+   <script type="text/javascript">
+    	$(document).ready(function() {
+    		const Url = "http://127.0.0.1:5000/"
+    		//function to add location to the database
+ 			$("#addButton").click(function() {
+ 				$.ajax({
+				  type: "POST",
+				  url: Url + "user/ria/location", 
+				  contentType: 'application/json;charset=UTF-8',
+				  data: JSON.stringify(data1),
+				  crossDomain: true
+ 				})
+   		 	})
 
+
+   		 	$.get(Url + "user/ria/location", function(data, status){
+    			existinglocs = data	
+    					
+			});
+		})
+    </script>
   </body>
 </html>
+
+

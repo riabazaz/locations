@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places"
-        async defer></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-    <title>Place Autocomplete</title>
+    <title>Copy</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
@@ -45,6 +46,8 @@
         background-color: #fff;
         font-family: Roboto;
         width: 350px;
+       	box-shadow: 0 2px 4px 0 rgba(0,0,0,0.50);
+
       }
       #pac-container {
         padding-bottom: 12px;
@@ -52,29 +55,36 @@
         width:350px;
       }
       #pac-input {
-        background-color: #fff;
-        font-family: Roboto;
-        font-size: 15px;
-        font-weight: 300;
-        margin-left: 20px;
-        margin-top: 10px;
-        padding: 0 13px 0 13px;
-        text-overflow: ellipsis;
-        width: 265px;
-        float: left;
-        margin-bottom: 10px;
-        border-radius: 20px 0px 0px 20px;
+	    background-color: #fff;
+	    font-family: Helvetica Neue;
+	    font-size: 13px;
+	    font-weight: 300;
+	    margin-left: 10px;
+	    margin-top: 10px;
+	    padding: 0 13px 0 13px;
+	    padding-top: 2px;
+	    text-overflow: ellipsis;
+	    width: 275px;
+	    float: left;
+	    margin-bottom: 10px;
+	    padding-bottom: 2px;
+	    /* border-radius: 20px 0px 0px 20px; */
+	    border: 1px solid #979E9D;
+	    border-radius: 20px;
       }
-      #pac-input:focus {
-        border-color: #4d90fe;
+      #pac-input:hover {
+        border-color: #585858
       }
       #title {
-        color: #fff;
-        background-color: chocolate;
-        font-size: 25px;
-        font-weight: 500;
+      	font-family: HelveticaNeue-Light;
+		font-size: 27px;
+		color: #FFFFFF;
+		text-align: left;
+
+
+        background-color: #351C8D;
         padding: 10px 12px;
-        font-family: Roboto;
+        font-weight: 350px;
         border-radius: 10px 10px 0px 0px;
       }
       #list {
@@ -119,7 +129,7 @@
         border: 0;
         height: 0;
         width: 300px;
-        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: 3px solid rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         margin-left:-20px;
       }
@@ -128,19 +138,24 @@
         margin-top: 5px;
         color: chocolate;
       }
-      #addButton {
-            padding: 1.5px;
-            width: 20px;
-            background: sandybrown;
-            color: white;
-            float: left;
-            text-align: center;
-            font-size: 16px;
-            transition: 0.3s;
-            border-radius: 0px 20px 20px 0px;
-            box-sizing: border-box;
-            margin-top: 10.49PX;
+      
+
+	#addButton {
+	    margin-left: 5px;
+	    width: 22px;
+	    height: 22px;
+	    border: solid #351C8D;
+	    color: white;
+	    text-decoration-color: #351C8D;
+	    float: left;
+	    text-align: center;
+	    border: 1px solid #351C8D;
+	    transition: 0.3s;
+	    border-radius: 20px 20px 20px 20px;
+	    box-sizing: border-box;
+	    margin-top: 10.49PX;
       }
+
       #addButton:hover {
         background-color: #FEDAA5;
         cursor: pointer;
@@ -156,26 +171,22 @@
         transition: 0.3s;
         color: #f03e3e;
       }
+
+
      
     </style>
   </head>
   <body>
     <div class="pac-card" id="pac-card">
-        <div id="title">Add a Study Spot</div>
+        <div id="title">Study Spots</div>
       <div id="pac-container">
         <input id="pac-input" type="text"
             placeholder="Enter a location">
-        <span onclick="addItem()"id="addButton">+</span> 
+        <span id="addButton">+</span> 
       </div>
     </div>
     <div id="list">
-      <h3>Your Saved Locations</h3>
-      <hr class ="side"></hr>
-      <ul id="locations">
-      <!-- <li>hi<span class="close">x</span></li><hr>
-      <li>wassup<span class="close">x</span></li><hr>
-      <li>number3<span class="close">x</span></li><hr> -->
-      </ul>
+      <ul id="locations"></ul>
     </div>
     <div id="map"></div>
     <div id="infowindow-content">
@@ -186,24 +197,50 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script>
-      var optionSelected = false;
-      var place; 
+      var map; 
       var gmarkers = [];
       var listlocs = [];
-      // This example requires the Places library. Include the libraries=places
-      // parameter when you first load the API. For example:
-      // <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places">
-      var map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: 42.2767, lng: -83.7399},
-          zoom: 17,
-          fullscreenControl: false
+      var userexistinglocs;
+      var CLlat;
+      var CLlng;
+      const Url = "http://127.0.0.1:5000/"
+
+      if(document.getElementsByTagName('li').length == 0){
+          var ul = document.getElementById("locations")
+          ul.innerHTML = "No study spots"
+      }
+
+      $(document).ready(function() {
+        $.get(Url + "user/ria/location", function(data, status){
+          userexistinglocs = data
+          if(data != []){
+            initExistingLocs(userexistinglocs)
+          } 
         });
+      })
+
+      function  initExistingLocs(existinglocs){
+        for(var i = 0; i < existinglocs.length; i++){
+          addItem(existinglocs[i].name, existinglocs[i].lat, existinglocs[i].lng, existinglocs[i].id)
+          addMarker(existinglocs[i].name, existinglocs[i].lat, existinglocs[i].lng, existinglocs[i].id)
+        }
+      }
       
-    function initMap() {
+
+
+
+      function initMap() {
+        var place;
         var card = document.getElementById('pac-card');
         var input = document.getElementById('pac-input');
         var types = document.getElementById('type-selector');
         var strictBounds = document.getElementById('strict-bounds-selector');
+        var mapfake = {
+            center: {lat: 42.2767, lng: -83.7399},
+            zoom: 17,
+            fullscreenControl: false
+          }
+        map = new google.maps.Map(document.getElementById('map'), mapfake);
         map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
         var cityBounds = new google.maps.LatLngBounds(
           new google.maps.LatLng(42.2767, -83.7399));
@@ -220,7 +257,7 @@
         autocomplete.bindTo('bounds', map);
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
-            ['address_components', 'geometry', 'icon', 'name']);
+            ['address_components', 'geometry', 'icon', 'name', 'formatted_address','place_id']);
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
@@ -229,32 +266,81 @@
           anchorPoint: new google.maps.Point(0, -29)
         });
 
+        function removeExistingLocs (){
+         for(var i = 0; i < userexistinglocs.length; i++){
+            var el = document.getElementById("butt")
+            el.onclick();
+         }
+        }
+
+        function  ReinitExistingLocs(existinglocs){
+          for(var i = 0; i < existinglocs.length; i++){
+            addItem(existinglocs[i].name, existinglocs[i].lat, existinglocs[i].lng, existinglocs[i].id)
+            addMarker(existinglocs[i].name, existinglocs[i].lat, existinglocs[i].lng, existinglocs[i].id)
+            var data1 = {
+              'id' : existinglocs[i].id,
+              'formatted_address' : existinglocs[i].formatted_address,
+              'name' : existinglocs[i].name,
+              'latitude' : existinglocs[i].lat,
+              'longitude' :  existinglocs[i].lng
+
+            }
+            $(document).ready(function() {
+              $.ajax({
+                    type: "POST",
+                    url: Url + "user/ria/location", 
+                    contentType: 'application/json;charset=UTF-8',
+                    data: JSON.stringify(data1),
+                    crossDomain: true
+              })
+            })
+          }
+
+        }
+
+
+        CLinfoWindow = new google.maps.InfoWindow;
+
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            CLlng = pos.lng;
+            CLlat = pos.lat;
+            CLinfoWindow.setPosition(pos);
+            CLinfoWindow.setContent('Location found.');
+            CLinfoWindow.open(map);
+            map.setCenter(pos);
+            if(userexistinglocs.length != 0){
+              var tempexistinglocs = userexistinglocs;
+              removeExistingLocs();
+              ReinitExistingLocs(tempexistinglocs);
+            }
+
+         }, function() {
+            handleLocationError(true, CLinfoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, CLinfoWindow, map.getCenter());
+      	}
+
+	    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+	        CLinfoWindow.setPosition(pos);
+	        CLinfoWindow.setContent(browserHasGeolocation ?
+	                              'Error: The Geolocation service failed.' :
+	                              'Error: Your browser doesn\'t support geolocation.');
+	        CLinfoWindow.open(map);
+	    }
+
         autocomplete.addListener('place_changed', function() {
           infowindow.close();
           marker.setVisible(false);
           place = autocomplete.getPlace();
-          var name = input.value.split(/,(.+)/)[0];
-          var placeshortname = place.name.split(/,(.+)/)[0];
-   //        console.log(place.address_components)
-			// for (var i = 0; i < listlocs.length; i++) {
-   //        		console.log(listlocs[i].address_components)
-   //        	}
-
-
-          if(place){
-          	var alreadyContained = false;
-          	console.log(listlocs.length)
-          	for (var i = 0; i < listlocs.length; i++) {
-          		if(place.name == listlocs[i]){
-          			console.log('go')
-          			alreadyContained = true;
-          		}
-          	}
-          	if(!alreadyContained){
-            	optionSelected = true;
-          	}
-          	
-          }
+      
           if (!place.geometry) {
             // User entered the name of a Place that was not suggested and
             // pressed the Enter key, or the Place Details request failed.
@@ -282,104 +368,209 @@
           infowindowContent.children['place-name'].textContent = place.name;
           infowindowContent.children['place-address'].textContent = address;
           infowindow.open(map, marker);
-          });
- 
-        // Sets a listener on a radio button to change the filter type on Places
-        // Autocomplete.
-        function setupClickListener(id, types) {
-          var radioButton = document.getElementById(id);
-          radioButton.addEventListener('click', function() {
-            autocomplete.setTypes(types);
-            });
+
+          var data1 = {
+              'id' : place.place_id,
+              'formatted_address' : place.formatted_address,
+              'name' : place.name,
+              'latitude' : place.geometry.location.lat(),
+              'longitude' : place.geometry.location.lng()
           }
-          setupClickListener('changetype-all', []);
-          setupClickListener('changetype-address', ['address']);
-          setupClickListener('changetype-establishment', ['establishment']);
-          setupClickListener('changetype-geocode', ['geocode']); 
-          document.getElementById('use-strict-bounds')
-              .addEventListener('click', function() {
-                console.log('Checkbox clicked! New state=' + this.checked);
-                autocomplete.setOptions({strictBounds: this.checked});
-            });
-      }
-
-
-      function addItem(){
-          if(optionSelected == true){
-            if (document.getElementsByTagName('li').length == 0){
-              ul = document.getElementById("locations")
-              ul.innerHTML = ''
-            }
-            var ul = document.getElementById("locations")
-            var input = document.getElementById("pac-input")
-            var li = document.createElement("li")
-
           
-            var name = input.value.split(/,(.+)/)[0];
-            var hr = document.createElement("hr")
-            var span = document.createElement("span")
-            span.className = "close"
-            // var times = document.createElement("i").setAttribute('class', "fas fa-times")
-            span.innerHTML = "x"
-            // span.innerHTML = '<aria-hidden="true"></i>';
-            li.setAttribute('id', name);
-            li.appendChild(document.createTextNode(name));
-            // new stuff here
-            li.append(span);
-            ////////////////////////
-            ul.appendChild(li);
-            
-            // new stuff here
-            ul.appendChild(hr)
-            ////////////////////////
-            var marker = new google.maps.Marker({
-              map: map,
-              anchorPoint: new google.maps.Point(0, -29)
-             
-            });
-             marker.setPosition(place.geometry.location);
-              marker.setVisible(true);
-           	  marker.set("id", name)
-           	  gmarkers.push(marker);
-           	 listlocs.push(place.name)
 
-            // marker.set("id", )
-           
-            // marker.set("name", gmarkers.length)
+          $(document).ready(function() {
+            var input;
+          //function to add location to the database
+            $("#addButton").unbind().click(function() {
+              input = $("#pac-input").val();
+              var name = input.split(/,(.+)/)[0];
+              addItem(name, place.geometry.location.lat(), place.geometry.location.lng(), place.place_id)
+              addMarker(name, place.geometry.location.lat(), place.geometry.location.lng(), place.place_id)
+              $.ajax({
+                type: "POST",
+                url: Url + "user/ria/location", 
+                contentType: 'application/json;charset=UTF-8',
+                data: JSON.stringify(data1),
+                crossDomain: true
+              })
 
-             span.onclick = function(){
-              var item = document.getElementById(name);
-              ul.removeChild(item);
-              ul.removeChild(hr);
-              console.log(item.id)
-              for (var i = 0; i < gmarkers.length; i++) {
-                console.log(gmarkers[i].id)
-                if(gmarkers[i].id == item.id){
-                  console.log("hi")
-                  gmarkers[i].setMap(null)
-                  gmarkers[i]=null
-                  gmarkers.splice(i, 1)
-                  listlocs.splice(i, 1)
+            })
+          })
 
-                }
-              }
-              if(document.getElementsByTagName('li').length == 0){
-              	console.log("boo")
-                ul.innerHTML = "No study spots"
-              }
+        });
+      }
+
+      function addItem(name, lat, lng, id){
+        var popularityinfo;
+        for (var i = 0; i < listlocs.length; i++) {
+          if(id == listlocs[i]){
+            return;
+          }
+        }
+        if (document.getElementsByTagName('li').length == 0){
+          ul = document.getElementById("locations")
+          ul.innerHTML = ' '
+        }
+
+        poptimesdata = {
+          "key": "AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4", 
+          "id" : id
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "http://127.0.0.1:5001/" + id, 
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify(poptimesdata),
+            crossDomain: true,
+            success: function(data) {
+              poptimeinfo = data;
+              popularTimeInfo(data);
+            }
+        })
+        function popularTimeInfo(data){
+          var currentday = data[1].currentday
+          var currenthour = data[1].currenthour
+          console.log(currenthour)
+          var currentpopularity = data[0].populartimes[currentday].data[currenthour]
+          var maxpopularity = 0;
+          for(var i = 0; i < 23; i++){
+            if(data[0].populartimes[currentday].data[i] > maxpopularity){
+              maxpopularity = data[0].populartimes[currentday].data[i]
             }
           }
-          optionSelected = false;  
-      }
+
+          if(currentpopularity/maxpopularity < .15){
+            popularityinfo = "Usually not too busy"
+          }
+          else if (currentpopularity/maxpopularity > .5){
+            popularityinfo = "Usually a little busy"
+          }
+
+          else if(currentpopularity/maxpopularity > .75){
+            popularityinfo = "Usually as busy as it gets"
+          }
+          appendPopularity(popularityinfo)
+        }
+
+      
+
+        // $.get("http://127.0.0.1:5001/" + id, function(data, status){
+        //   console.log(data) 
+        // });
 
 
-      if(document.getElementsByTagName('li').length == 0){
+        var timeto;
+        if(CLlat && CLlng){
+	        var service = new google.maps.DistanceMatrixService();
+	        var origin = new google.maps.LatLng(CLlat, CLlng);
+	        var destination = new google.maps.LatLng(lat, lng);
+
+  			service.getDistanceMatrix( {
+  			    origins: [origin],
+  			    destinations: [destination],
+  			    travelMode: 'WALKING',
+  			    unitSystem: google.maps.UnitSystem.IMPERIAL
+  			}, callback);
+
+  			function callback(response, status) {
+  				if (status == 'OK') {
+  				    var origins = response.originAddresses;
+  				    var destinations = response.destinationAddresses;
+  				    for (var i = 0; i < origins.length; i++) {
+  				      var results = response.rows[i].elements;
+  				      for (var j = 0; j < results.length; j++) {
+  				        var element = results[j];
+  				        var distance = element.distance.text;
+  				        appendDistance(distance)
+  					    var duration = element.duration.text;
+  				        timeto = duration;
+  				        
+  				      }
+  				    }
+  				}
+			   }
+        }
+
         var ul = document.getElementById("locations")
-        ul.innerHTML = "No study spots"
+        var li = document.createElement("li")
+        var hr = document.createElement("hr")
+        var span = document.createElement("span")
+        span.className = "close"
+        span.setAttribute('id', "butt")
+        span.innerHTML = "x"
+        li.setAttribute('id', name);
+        li.appendChild(document.createTextNode(name));
+
+        function appendPopularity(popularityinfo){
+          li.append(", " + popularityinfo)
+
+        }
+        // new stuff here
+        
+        function appendDistance(distance){
+        	li.append(", " + distance);
+        	//ul.appendChild(timeto);
+        }
+        
+        li.append(span);
+
+        ////////////////////////
+        ul.appendChild(li);
+        // new stuff here
+        ul.appendChild(hr)
+
+
+        span.onclick = function(){
+          var item = document.getElementById(name);
+          ul.removeChild(item);
+          ul.removeChild(hr);
+          for (var i = 0; i < gmarkers.length; i++) {
+            if(gmarkers[i].id == item.id){
+              gmarkers[i].setMap(null)
+              gmarkers[i]=null
+              gmarkers.splice(i, 1)
+              listlocs.splice(i, 1)
+            }
+          }
+          if(document.getElementsByTagName('li').length == 0){
+            ul.innerHTML = "No study spots"
+          }
+          $(document).ready(function() {
+              $.ajax({
+                type: "DELETE",
+                url: Url + "user/ria/location/" + id, 
+                contentType: 'application/json;charset=UTF-8',
+                crossDomain: true
+              })
+          })
+              
+        }
       }
-      initMap();
+
+      function addMarker(name, lat, lng, id){
+        var marker = new google.maps.Marker({
+          map: map,
+          anchorPoint: new google.maps.Point(0, -29)
+        });
+        var latlng = new google.maps.LatLng(lat, lng);
+        marker.setPosition(latlng);
+        marker.setVisible(true);
+        marker.set("id", name)
+        gmarkers.push(marker);
+        listlocs.push(id)
+
+
+
+
+      }
+
+   </script>
+   <script type="text/javascript">
     </script>
-    <script type="text/javascript">
-    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCXjqHG_zF28DxTZs0jgAP-IPK0aK1Jnj4&libraries=places&callback=initMap"
+        async defer></script>
   </body>
 </html>
+
+

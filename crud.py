@@ -108,11 +108,16 @@ class Location(db.Model):
     id = db.Column(db.String(300), primary_key=True)
     formatted_address = db.Column(db.String(200), unique=True)
     name = db.Column(db.String(50), unique=False)
+    lat = db.Column(db.String(50), unique=False)
+    lng = db.Column(db.String(50), unique=False)
 
-    def __init__(self, place_id, formatted_address, name):
+
+    def __init__(self, place_id, formatted_address, name, lat, lng):
         self.id = place_id
         self.formatted_address = formatted_address
         self.name = name
+        self.lat = lat
+        self.lng = lng
 
 
 
@@ -125,11 +130,14 @@ def add_user_location(id):
     location_id = request.json['id']
     formatted_address = request.json['formatted_address']
     name = request.json['name']
+    lat = request.json['latitude']
+    lng = request.json['longitude']
+
     inUserLocs = False
 
     if Location.query.get(location_id) == None:
         #if not in location table, this means not in user.studylocations as well
-        new_location = Location(location_id, formatted_address, name)
+        new_location = Location(location_id, formatted_address, name, lat, lng)
         user.studylocations.append(new_location) 
 
     else:
@@ -197,7 +205,7 @@ def user_location_delete(userid, locationid):
 class LocationSchema(ma.Schema):
     class Meta:
         # Fields to expose
-        fields = ('id','formatted_address', 'name')
+        fields = ('id','formatted_address', 'name', 'lat', 'lng')
 
 location_schema = LocationSchema()
 locations_schema = LocationSchema(many=True)
@@ -215,3 +223,11 @@ users_schema = UserSchema(many=True)
 
 if __name__ == '__main__':
 	app.run(debug=True)
+
+
+
+
+
+
+
+
